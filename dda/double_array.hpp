@@ -289,10 +289,10 @@ public:
   bool save(std::ostream &os) const {
     os.write(reinterpret_cast<const char *>(&base_[0]),
              base_.size()*sizeof(int));
-    if(os.bad()) return false;
+    if(os.fail()) return false;
     os.write(reinterpret_cast<const char *>(&check_[0]),
              check_.size()*sizeof(int));
-    if(os.bad()) return false;
+    if(os.fail()) return false;
     return true;
   }
 
@@ -315,15 +315,15 @@ public:
 
   bool load(std::istream &is){
     size_t siz_ = is.seekg(0,std::ios::end).tellg();
-    if(is.bad()) return false;
+    if(is.fail()) return false;
     base_.resize(siz_ / (2 * sizeof(int)));
     check_.resize(base_.size());
     is.seekg(0, std::ios::beg);
-    if(is.bad()) return false;
+    if(is.fail()) return false;
     is.read(reinterpret_cast<char *>(&base_[0]), base_.size()*sizeof(int));
-    if(is.bad()) return false;
+    if(is.fail()) return false;
     is.read(reinterpret_cast<char *>(&check_[0]), check_.size()*sizeof(int));
-    if(is.bad()) return false;
+    if(is.fail() && !is.eof()) return false;
     return true;
   }
 
