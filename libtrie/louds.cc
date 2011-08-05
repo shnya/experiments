@@ -6,16 +6,12 @@
 #include <deque>
 #include <algorithm>
 
-#include "bv.hpp"
 #include "rankdic.hpp"
 
 
-using namespace std;
-
 class LOUDS {
   RankDict rd;
-  BitVector<> bv;
-  vector<char> trans;
+  std::vector<char> trans;
 
   struct Range {
     size_t begin;
@@ -25,70 +21,43 @@ class LOUDS {
       : begin(b), end(e), level(l) {}
   };
 
-  void build(const vector<const char*> &words){
-    bv.clear();
+  void build(const std::vector<const char*> &words){
+    BitVector<uint32_t> bv;
     bv.push_back(1);
     bv.push_back(0);
     trans.push_back('\0');
-    trans.push_back('\0');
-    //cout << "  ";
-    //bv.print(); cout << endl;
+    //trans.push_back('\0');
 
-    deque<Range> queue;
+    std::deque<Range> queue;
     queue.push_back(Range(0, words.size(), 0));
     while(!queue.empty()){
-      //bv.print();
-      //cout << endl;
       Range r = queue.front(); queue.pop_front();
       size_t begin = r.begin;
       size_t end = r.end;
       size_t level = r.level;
       int c = words[begin][level];
-      //cout << (char)c << " " << begin << " " << end << endl;
       for(size_t i = begin + 1; i <= end; i++){
-        //cout << (char)c << " " << i << endl;
         if(i == end || c != words[i][level]){
           if(c != '\0'){
-            //for(size_t j = 0; j < level; j++)  cout << ' ';
-            //cout << (char)c << " " << words[i-1][level-1] << " "
-            //<< words[i-1] << endl;
-            //cout << (char)c;
             queue.push_back(Range(begin, i, level+1));
           }else{
             queue.push_back(Range(begin, begin, level));
           }
           bv.push_back(true);
-          //cout << "push 1 ";
-          //bv.print();
-          //cout << endl;
           trans.push_back(c);
           begin = i;
           if(i != end) c = words[i][level];
         }
       }
-      //cout << " ";
-      trans.push_back('\0');
-      //cout << "push 0 ";
+      //trans.push_back('\0');
       bv.push_back(false);
-      //bv.print();
-      //cout << endl;
     }
-    //cout << endl;
-    /*
-      for(size_t i = 0; i < trans.size(); i++) {
-      if(trans[i] == '\0') cout << '0';
-      else cout << trans[i];
-      }
-      //cout << bv.size() << " " << trans.size() << endl;
-      cout << endl;
-    */
-    //bv.print();
-    //cout << endl;
-    rd.build(&bv);
+
+    rd.build(bv);
   }
 
   bool isleaf(size_t x){
-    if(bv.test(x) == 0) return true;
+    if(rd.test(x) == 0) return true;
     return false;
   }
 
@@ -98,89 +67,117 @@ class LOUDS {
 
   int first_child(size_t x){
     int y = rd.select0(rd.rank1(x)) + 1;
-    if(bv.test(y) == 0) return -1;
+    if(rd.test(y) == 0) return -1;
     return y;
   }
 
   int last_child(size_t x){
     int y = rd.select0(rd.rank1(x) + 1) -1;
-    if(bv.test(y) == 0) return -1;
+    if(rd.test(y) == 0) return -1;
     return y;
   }
 
   int next_sibling(size_t x){
-    if(bv.test(x+1) == 0) return -1;
+    if(rd.test(x+1) == 0) return -1;
     return x+1;
   }
 
 public:
-  LOUDS(const vector<const char*> &words){
+  LOUDS(const std::vector<const char*> &words){
     build(words);
   }
 
-  LOUDS(const vector<string> &words){
-    vector<const char *> wordsp;
+  LOUDS(const std::vector<std::string> &words){
+    std::vector<const char *> wordsp;
     for(size_t i = 0; i < words.size(); i++)
       wordsp.push_back(words[i].c_str());
     build(wordsp);
   }
 
-  void common_prefix_search(const string &str, vector<string> &vec){
-    int index = 0;
+  LOUDS(){}
+
+  void common_prefix_search(const std::string &str, 
+                            std::vector<std::string> &vec){
+    int index = 1;
     vec.clear();
     const char *p = str.c_str();
 
     for(size_t i = 0; i < str.size() + 1; i++,p++){
-      int c = first_child(index);
+      int c = rd.select0(index) + 1;
+      int label_id = rd.rank1(c) - 1;
       //cout << "first " << c << endl;
       int c2 = -1, term = -1;
       while(c != -1){
-        char label = trans[c];
+        char label = trans[label_id];
         if(label == *p){
-          c2 = c;
+          c2 = label_id;
         }else if(label == '\0'){
-          term = c;
+          term = label_id;
         }
+        label_id++;
         c = next_sibling(c);
       }
-      if(term != -1 && first_child(term) == -1){
+      if(term != -1 && !rd.test(rd.select0(term + 1) + 1)){
         vec.push_back(str.substr(0, i));
       }
       if(c2 == -1) return;
-      index = c2;
+      index = c2 + 1;
     }
     //cout << "end " << index << endl;
-    if(index != -1 && first_child(index) == -1){
+    if(!rd.test(rd.select0(index) + 1)){
       vec.push_back(str);
     }
   }
 
-  bool exact_match(const string &str){
-    int index = 0;
+  bool exact_match(const std::string &str){
+    int index = 1;
     const char *p = str.c_str();
 
     for(size_t i = 0; i < str.size() + 1; i++,p++){
-      int c = first_child(index);
-      int c2 = -1;
+      int c = rd.select0(index) + 1;
+      int label_id = rd.rank1(c) - 1;
       while(c != -1){
-        char label = trans[c];
+        char label = trans[label_id];
         if(label == *p){
-          c2 = c;
+          break;
         }
         c = next_sibling(c);
+        label_id++;
       }
-      if(c2 == -1) return false;
-      index = c2;
+      //std::cout << *p << " " << trans[label_id] << std::endl;
+      if(c == -1) return false;
+      index = label_id + 1;
     }
-    if(index != -1 && first_child(index) == -1){
+    if(!rd.test(rd.select0(index) + 1)){
       return true;
     }
     return false;
   }
+
+  bool save(std::ostream &os) const {
+    uint32_t n = trans.size();
+    os.write(reinterpret_cast<const char *>(&n), sizeof(uint32_t));
+    if(os.fail()) return false;
+    os.write(reinterpret_cast<const char *>(&trans[0]), sizeof(char)*n);
+    if(os.fail()) return false;
+    //std::cout << "write label " << sizeof(char) * n << "bytes" << std::endl;
+
+    return rd.save(os);
+  }
+
+  bool load(std::istream &is) {
+    uint32_t n;
+    is.read(reinterpret_cast<char *>(&n), sizeof(uint32_t));
+    if(is.fail()) return false;
+    trans.resize(n);
+    is.read(reinterpret_cast<char *>(&trans[0]), sizeof(char) * n);
+    if(is.fail()) return false;
+    return rd.load(is);
+  }
 };
 
 #include "profile.hpp"
-
+using namespace std;
 
 
 int main(int argc, char *argv[])
@@ -197,31 +194,30 @@ int main(int argc, char *argv[])
   t2 = GetusageSec();
   PrintTime(t1,t2);
 
-  vector<string> vec;
+  ofstream ofs("test2.idx");
+  dic.save(ofs);
+  ofs.close();
+
+  LOUDS dic2;
+  ifstream ifs("test2.idx");
+  dic2.load(ifs);
+  ifs.close();
+
 
   t1 = GetusageSec();
-  int n = 0;
+  vector<string> vec;
+  //int n = 0;
   for(vector<string>::iterator itr = lines.begin();  itr != lines.end(); ++itr){
-    //dic.common_prefix_search(itr->c_str(), vec);
-    if(!dic.exact_match(*itr)){
-      //if(id == 0){
-      cout << "error" << endl;
+    dic2.common_prefix_search(itr->c_str(), vec);
+    for(size_t i = 0; i < vec.size(); i++){
+      cout << *itr << " " << vec[i] << endl;
     }
-    if(n++ % 100000 == 0){
-      cout << n << endl;
-    }
-    /*
-      cout << *itr << "\t";
-      if(vec.size() > 0){
-      cout << "Found: num=" << vec.size() << endl;
-      }else{
-      cout << "Not Found" << endl;
-      }
-      for(vector<string>::iterator itr = vec.begin();
-      itr != vec.end(); ++itr) {
-      cout << *itr << endl;
-      }
-    */
+    //if(!dic2.exact_match(*itr)){
+    //cout << "error" << endl;
+    //}
+    //if(n++ % 100000 == 0){
+    //cout << n << endl;
+    //}
   }
   t2 = GetusageSec();
   PrintTime(t1,t2);

@@ -17,7 +17,6 @@ class BitVector {
 
 public:
   BitVector(){
-    BV_UTIL::_static_assert<BV_UTIL::is_unsigned<T>::value>::value;
     capacity_ = t_size_;
     siz_ = 0;
     array_ = new T[1];
@@ -31,9 +30,8 @@ public:
   }
 
   BitVector(const BitVector<T>& bv){
-    BV_UTIL::_static_assert<BV_UTIL::is_unsigned<T>::value>::value;
-    size_t new_block_size = bv.siz_ / bv.t_size;
-    if(bv.siz_ % bv.t_size != 0)
+    size_t new_block_size = bv.siz_ / bv.t_size_;
+    if(bv.siz_ % bv.t_size_ != 0)
       new_block_size += 1;
 
     assert(bv.capacity_ / t_size_ >= new_block_size);
@@ -41,6 +39,22 @@ public:
     siz_ = bv.siz_;
     array_ = new T[new_block_size];
     memcpy(array_, bv.array_, new_block_size * sizeof(T));
+  }
+
+  BitVector<T>& operator=(const BitVector<T>& bv){
+    if(this == &bv) return *this;
+    size_t new_block_size = bv.siz_ / bv.t_size_;
+    if(bv.siz_ % bv.t_size_ != 0)
+      new_block_size += 1;
+
+    assert(bv.capacity_ / t_size_ >= new_block_size);
+    capacity_ = new_block_size * t_size_;
+    siz_ = bv.siz_;
+    T* new_ptr = new T[new_block_size];
+    memcpy(new_ptr, bv.array_, new_block_size * sizeof(T));
+    delete[] array_;
+    array_ = new_ptr;
+    return *this;
   }
 
   ~BitVector(){
@@ -157,8 +171,33 @@ public:
     return array_[idx >> multi_];
   }
 
-  bool save() {
+  bool save(std::ostream &os) const {
+    uint32_t n = (siz_ + t_size_ - 1) / t_size_;
+    uint32_t bitnum = sizeof(T);
+    os.write(reinterpret_cast<const char *>(&bitnum), sizeof(uint32_t));
+    if(os.fail()) return false;
+    os.write(reinterpret_cast<const char *>(&siz_), sizeof(uint32_t));
+    if(os.fail()) return false;
+    os.write(reinterpret_cast<const char *>(array_), sizeof(T) * n);
+    if(os.fail()) return false;
+    //std::cout << "write bit vector " << sizeof(T) * n << "bytes" << std::endl;
 
+    return true;
+  }
+
+  bool load(std::istream &is) {
+    uint32_t bitnum;
+    is.read(reinterpret_cast<char *>(&bitnum), sizeof(uint32_t));
+    if(is.fail()) return false;
+    is.read(reinterpret_cast<char *>(&siz_), sizeof(uint32_t));
+    if(is.fail()) return false;
+    uint32_t n = (siz_ + t_size_ - 1) / t_size_;
+    T *new_ptr = new T[n];
+    is.read(reinterpret_cast<char *>(new_ptr), sizeof(T) * n);
+    if(is.fail() && !is.eof()) return false;
+    capacity_ = n * t_size_;
+    delete[] array_;
+    array_ = new_ptr;
     return true;
   }
 
