@@ -24,7 +24,7 @@ void print(const DoubleArray &da, const char *str){
   vector<int> v1;
   vector<int> v2;
   cout << "searching " << str << endl;
-  da.commonPrefixSearch(str,v1,v2);
+  da.common_prefix_search(str,v1,v2);
   if(v1.size() == 0) cout << "Not Found" << endl;
   for(size_t i = 0; i < v1.size(); i++)
     cout << v1[i] << " " << v2[i] << endl;
@@ -80,7 +80,7 @@ void main3(int argc, char *argv[], DoubleArray &da, vector<string> &v){
   t1 = GetusageSec();
   for(size_t i = 0; i < v.size(); i++){
     int a;
-    if((a = da.exactMatch(v[i].c_str())) == -1){
+    if((a = da.exact_match(v[i].c_str())) == -1){
       cout << "error " << v[i] << " " << a << endl;
     }else{
       //cout << v[i] << " " << a << endl;

@@ -1,3 +1,6 @@
+#ifndef _RANKDIC_HPP_
+#define _RANKDIC_HPP_
+
 #include <iostream>
 #include <algorithm>
 #include <vector>
@@ -219,32 +222,4 @@ private:
 };
 
 
-
-/*
-  using namespace std;
-  using namespace BV_UTIL;
-
-
-  int main(int argc, char *argv[])
-  {
-  uint32_t a = 0, b = 7;
-
-  //cout << get_bits(a, 0, 2) << endl;
-
-  vector<uint32_t> v;
-  for(int i = 0; i < 1000; i++){
-  v.push_back(i);
-  }
-  BitVector<> bv(&v[0],v.size());
-  RankDict rd(&bv);
-
-  for(size_t i = 0; i < 32000; i++){
-  cout << i << endl;
-  if(bv.select(1,i) == static_cast<size_t>(-1)) break;
-  if(bv.select1(i) != rd.select1(i)){
-  cout << "wrong! " << bv.select1(i) << " " << rd.select1(i) << endl;
-  }
-  }
-  return 0;
-  }
-*/
+#endif /* _RANKDIC_HPP_ */

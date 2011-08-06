@@ -1,3 +1,8 @@
+#ifndef _BV_UTIL_H_
+#define _BV_UTIL_H_
+
+
+
 #include <cassert>
 #include <stdint.h>
 
@@ -159,3 +164,4 @@ namespace BV_UTIL {
   }
 
 }
+#endif /* _BV_UTIL_H_ */

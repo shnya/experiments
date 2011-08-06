@@ -204,7 +204,7 @@ class DoubleArray {
   }
 
 public:
-  int exactMatch(const char *str) const {
+  int exact_match(const char *str) const {
     std::pair<int,const char*> state = fetch(str);
     if(state.first > 0){
       int t = array_[state.first].base + static_cast<unsigned char>(*state.second);
@@ -213,7 +213,7 @@ public:
     return -1;
   }
 
-  void commonPrefixSearch(const char *str,
+  void common_prefix_search(const char *str,
                           std::vector<int> &res_len,
                           std::vector<int> &res_id) const {
     const char *p = str;
