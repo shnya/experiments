@@ -7,6 +7,8 @@
 
 #include "profile.hpp"
 #include "sampling.hpp"
+#include "string_piece.hpp"
+
 
 struct NN {
   int id;
@@ -40,7 +42,6 @@ class NNGraph {
   double sample_ratio_;
   double converge_ratio_;
   double t1,t2;
-
 
   bool _updateNN(int i,int j, double sim){
     std::vector<NN> &node = graph_[i];
@@ -127,7 +128,7 @@ class NNGraph {
       for(size_t l = 0; l < new_res.size(); l++){
         for(int j = 0; j < k_; j++){
           if(nodes[j].id == new_res[l]){
-            newflgs_[l*k_+j] = false;
+            newflgs_[i*k_+j] = false;
             //nodes[j].newflg = false;
           }
         }
@@ -143,6 +144,8 @@ class NNGraph {
     PrintTime(t1,t2);
     std::cout << std::flush;
     int gcount = 0;
+    double t_total = 0.0;
+    int t_count = 0;
     while(gcount < 100000){
       //print_NN();
       gcount++;
@@ -174,6 +177,7 @@ class NNGraph {
           for(size_t m = l+1; m < new_nodes.size(); m++){
             int u2 = new_nodes[m];
             //tt1 = GetusageSec();
+            t_count++;
             double sim = sfunc_(data_[u1],data_[u2]);
             //tt2 = GetusageSec();
             //t_total += tt2 - tt1;
@@ -184,6 +188,7 @@ class NNGraph {
             int u2 = old_nodes[m];
             if(u1 == u2) continue;
             //tt1 = GetusageSec();
+            t_count++;
             double sim = sfunc_(data_[u1],data_[u2]);
             //tt2 = GetusageSec();
             //t_total += tt2 - tt1;
@@ -194,11 +199,13 @@ class NNGraph {
       }
       t2 = GetusageSec();
       //std::cout << "sim total "; PrintTime(0.0,t_total);
+      t_total += t2 - t1;
       PrintTime(t1,t2);
       std::cout << std::flush;
       std::cout << "iteration " << gcount << ": update " << c << std::endl;
       if(c <= converge_ratio_ * size_ * k_) break;
     }
+    PrintTime(0.0,t_total/t_count*100000);
   }
 
 public:
