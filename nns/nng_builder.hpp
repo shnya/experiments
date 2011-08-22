@@ -127,7 +127,7 @@ class NNGraph {
       for(size_t l = 0; l < new_res.size(); l++){
         for(int j = 0; j < k_; j++){
           if(nodes[j].id == new_res[l]){
-            newflgs_[l*k_+j] = false;
+            newflgs_[i*k_+j] = false;
             //nodes[j].newflg = false;
           }
         }
@@ -141,7 +141,6 @@ class NNGraph {
     _sampling();
     t2 = GetusageSec();
     PrintTime(t1,t2);
-    std::cout << std::flush;
     int gcount = 0;
     while(gcount < 100000){
       //print_NN();
@@ -151,7 +150,6 @@ class NNGraph {
       _build_new_old_graph(new_graph,old_graph);
       t2 = GetusageSec();
       PrintTime(t1,t2);
-      std::cout << std::flush;
 
       t1 = GetusageSec();
       std::vector<std::vector<int> > new_rev(size_), old_rev(size_);
@@ -159,12 +157,11 @@ class NNGraph {
       _reverse(old_graph,old_rev);
       t2 = GetusageSec();
       PrintTime(t1,t2);
-      std::cout << std::flush;
       int c = 0;
       t1 = GetusageSec();
       //double t_total = 0.0,tt1,tt2;
       for(int i = 0; i < size_; i++){
-        if(i % 1000 == 0) std::cout << i << " item processed" << std::endl;
+        if(i % 1000 == 0) std::cerr << i << " item processed" << std::endl;
         std::vector<int> new_nodes, old_nodes;
         //cout << i << endl;
         _sample_union(new_graph[i],new_rev[i],new_nodes);
@@ -195,8 +192,7 @@ class NNGraph {
       t2 = GetusageSec();
       //std::cout << "sim total "; PrintTime(0.0,t_total);
       PrintTime(t1,t2);
-      std::cout << std::flush;
-      std::cout << "iteration " << gcount << ": update " << c << std::endl;
+      std::cerr << "iteration " << gcount << ": update " << c << std::endl;
       if(c <= converge_ratio_ * size_ * k_) break;
     }
   }
@@ -216,7 +212,6 @@ public:
     GenSample::init();
     t2 = GetusageSec();
     PrintTime(t1,t2);
-    std::cout << std::flush;
     _build();
   }
 
