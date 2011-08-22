@@ -18,7 +18,8 @@ double GetusageSec()
 
 void PrintTime(double before, double after)
 {
-  printf("  time = %10.30f\n", after-before);
+  fprintf(stderr,"  time = %10.30f\n", after-before);
+  fflush(stderr);
 }
 
 #endif /* _PROFILE_H_ */
