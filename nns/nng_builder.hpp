@@ -119,7 +119,7 @@ class NNGraph {
         if(newflgs_[i*k_+j]){
           new_nodes.push_back(nodes[j].id);
         }else{
-          old_graph[j].push_back(nodes[j].id);
+          old_graph[i].push_back(nodes[j].id);
         }
       }
       std::vector<int> new_res;

@@ -20,7 +20,7 @@ int main(int argc, char *argv[])
     lines.push_back(line);
   }
   //cout << "made index" << endl;
-  NNGraph<vector<string>, LevenshteinSimilarity> g(lines,15);
+  NNGraph<vector<string>, LevenshteinSimilarity> g(lines);
   for(size_t i = 0; i < lines.size(); i++){
     std::vector<std::pair<int,float> > nn = g.get_nn(i);
     cout << lines[i] << "\t";
