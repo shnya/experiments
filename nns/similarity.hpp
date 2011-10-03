@@ -59,8 +59,9 @@ struct NgramJaccardSimilarity {
 };
 
 
+template<class T>
 struct CosineSimilarity {
-  double operator()(const std::vector<int> &x, const std::vector<int> &y){
+  double operator()(const std::vector<T> &x, const std::vector<T> &y){
     int xsiz = x.size(), ysiz = y.size();
     double res = 0.0;
     int i=0,j=0;
