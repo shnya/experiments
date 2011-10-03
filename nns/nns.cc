@@ -31,20 +31,20 @@ int main(int argc, char *argv[])
   map<int,float> out;
   LevenshteinSimilarity simfunc;
   for(size_t i = 0; i < cur.size(); i++){
-    double minn = -1.0E+09;
-    int mini = cur[i];
+    double maxn = -1.0E+09;
+    int maxi = cur[i];
     for(int j = 0; j < T; j++){
-      int id = mini;
+      int id = maxi;
       for(int l = 0; l < k; l++){
         const pair<int,float> &near_k = mat.at(id,l);
         //cout << near_k.first << endl;
         float sim = simfunc(str,reader[near_k.first]);
-        if(sim > minn + 0.000001){
-          mini = near_k.first;
-          minn = sim;
+        if(sim > maxn){
+          maxi = near_k.first;
+          maxn = sim;
         }
       }
-      out.insert(make_pair(mini,minn));
+      out.insert(make_pair(maxi,maxn));
     }
   }
 
