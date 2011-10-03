@@ -59,6 +59,7 @@ int main(int argc, char *argv[])
     cout << reader[out2[i].second] << "," << out2[i].first << " ";
   }
   cout << endl;
+  mat.release();
 
   return 0;
 }

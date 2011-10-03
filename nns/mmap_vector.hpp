@@ -28,7 +28,7 @@ public:
     return siz_;
   }
 
-  void release() throw(MMapException) {
+  void release() {
     mmap.munmap();
   }
 };
@@ -67,7 +67,7 @@ public:
     return col_;
   }
 
-  void release() throw(MMapException) {
+  void release() {
     mmap.munmap();
   }
 };

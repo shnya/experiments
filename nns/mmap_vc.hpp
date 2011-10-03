@@ -38,7 +38,7 @@ public:
     return op_.size();
   }
 
-  void release() throw(MMapException) {
+  void release() {
     mmap_.munmap();
   }
 
