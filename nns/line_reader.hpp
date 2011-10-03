@@ -37,6 +37,7 @@ public:
     if(!ofs) return false;
     bool res = vc.save(ofs);
     ofs.close();
+    if(!ofs) return false;
     return res;
   }
 
