@@ -78,7 +78,7 @@ class MMapFile {
     return st_buf.st_size;
   }
 
-  void ExpandFile() throw(MMapException)
+  void ExpandFile()
   {
     if(lseek(fd_,offset_+size_-1,SEEK_SET) < 0){
       throw MMapException("lseek", path_);
@@ -96,7 +96,7 @@ class MMapFile {
   }
 
 
-  void MapFile() throw(MMapException)
+  void MapFile()
   {
     int pagesize = GetPageSize();
     int flag = GetMMapFlag();
@@ -111,7 +111,8 @@ class MMapFile {
   }
 
 
-  void Open() throw(MMapException) {
+  void Open()
+  {
     int mode = GetOpenMode();
     int siz = GetFileSize();
     if(siz == -1){
@@ -178,7 +179,7 @@ public:
     return size_;
   }
 
-  void msync() throw(MMapException)
+  void msync()
   {
     if(::msync(ptr_, size_, MS_SYNC) == -1){
       close(fd_);
@@ -186,7 +187,7 @@ public:
     }
   }
 
-  void munmap() throw(MMapException)
+  void munmap()
   {
     if(ptr_ == NULL) return;
     if(::munmap(ptr_, mapped_size_) == -1){

@@ -43,7 +43,7 @@ class MMapMatrix {
 public:
   MMapMatrix(const char *path, size_t offset = 0, size_t size = 0)
     : ptr_(NULL), row_(0),col_(0) {
-      mmap.open(path,offset,size);
+    mmap.open(path,offset,size);
     int *data = mmap.data<int>();
     row_ = *data;
     col_ = *(data + 1);
@@ -56,7 +56,7 @@ public:
   }
 
   const T& at(size_t i, size_t j) const {
-    return ptr_[i*col+j];
+    return ptr_[i*col_+j];
   }
 
   size_t row() const {
