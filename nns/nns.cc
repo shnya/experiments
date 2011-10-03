@@ -56,7 +56,6 @@ int main(int argc, char *argv[])
       out2.push_back(make_pair(itr->second,itr->first));
       //cout << itr->first << "," << itr->second << " ";
     }
-    cout << endl;
     sort(out2.begin(),out2.end(),greater<pair<float,int> >());
     for(int i = 0; i < O; i++){
       cout << reader[out2[i].second] << "," << out2[i].first << " ";
