@@ -37,7 +37,6 @@ int main(int argc, char *argv[])
       int id = maxi;
       for(int l = 0; l < k; l++){
         const pair<int,float> &near_k = mat.at(id,l);
-        //cout << near_k.first << endl;
         float sim = simfunc(str,reader[near_k.first]);
         if(sim > maxn){
           maxi = near_k.first;
@@ -52,7 +51,6 @@ int main(int argc, char *argv[])
   for(map<int,float>::const_iterator itr = out.begin();
       itr != out.end(); ++itr){
     out2.push_back(make_pair(itr->second,itr->first));
-    //cout << itr->first << "," << itr->second << " ";
   }
   sort(out2.begin(),out2.end(),greater<pair<float,int> >());
   for(int i = 0; i < O; i++){

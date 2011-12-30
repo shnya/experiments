@@ -14,7 +14,12 @@ int main(int argc, char *argv[])
     return -1;
   }
   //cout << "begin index" << endl;
-  LineReader::make_index(argv[1], (string(argv[1]) + ".idx").c_str());
+  bool res = LineReader::make_index(argv[1], 
+                                    (string(argv[1]) + ".idx").c_str());
+  if(!res){
+    cerr << "make index failed" << endl;
+    return -1;
+  }
   //LineReader reader(argv[1], (string(argv[1]) + ".idx").c_str());
   ifstream ifs(argv[1]);
   vector<string> lines;
@@ -24,7 +29,7 @@ int main(int argc, char *argv[])
   }
   if(!ifs.eof() && !ifs){
     ifs.close();
-    cerr << "file read error" << endl;
+    cerr << "file read failed" << endl;
     return -1;
   }
   //cout << "made index" << endl;
@@ -32,12 +37,12 @@ int main(int argc, char *argv[])
   ofstream ofs((string(argv[1]) + ".mat").c_str());
   if(!ofs || !g.save(ofs)){
     ofs.close();
-    cerr << "file write error" << endl;
+    cerr << "file write failed" << endl;
     return -1;
   }
   ofs.close();
   if(ofs.fail()){
-    cerr << "file close error" << endl;
+    cerr << "file close failed" << endl;
     return -1;
   }
   g.print_NN();

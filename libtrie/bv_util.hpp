@@ -17,6 +17,8 @@
 
 #include <cassert>
 #include <stdint.h>
+#include <iostream>
+
 
 namespace BV_UTIL {
   template <bool> struct _static_assert;
