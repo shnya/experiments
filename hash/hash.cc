@@ -4,7 +4,6 @@
 #include <string>
 
 #include <tr1/functional_hash.h>
-#include <iostream>
 
 class HashTable {
   static uint32_t hash_func(const std::string &key, uint32_t mask)
@@ -17,7 +16,6 @@ class HashTable {
     hash = (hash << 4)^(hash >> 28)^key[i];
     return (hash ^ (hash >> 10) ^ (hash >> 20)) & mask;
     */
-    //std::cout <<  hash_fun(static_cast<const char *>(keyp)) << std::endl;
 
     return hash_fun(key) & mask;
   }
@@ -122,7 +120,10 @@ class HashTable {
 
 
 public:
-  HashTable(uint32_t len = 1024){
+  HashTable(uint32_t _len = 1024){
+    uint32_t len = 1;
+    while(len >= _len)
+      len <<= 1;
     blocks = new block[len];
     mask = len - 1;
     memset(blocks, 0, sizeof(block) * (mask + 1));
@@ -168,6 +169,7 @@ private:
   block* blocks;
   uint32_t mask;
 };
+
 std::tr1::hash<std::string> HashTable::hash_fun = std::tr1::hash<std::string>();
 
 
