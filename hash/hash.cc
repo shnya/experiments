@@ -122,7 +122,7 @@ class HashTable {
 public:
   HashTable(uint32_t _len = 1024){
     uint32_t len = 1;
-    while(len >= _len)
+    while(len < _len)
       len <<= 1;
     blocks = new block[len];
     mask = len - 1;
